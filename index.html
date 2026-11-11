@@ -1,0 +1,1818 @@
+<!doctype html>
+<html lang="en-AU" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Element Strata Finances — SP 91099</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  /* ==========================================================================
+     1. STRICT 5-COLOUR BRAND PALETTE & DESIGN TOKENS
+     Brand Palette Only:
+     - #1f2a52 (Navy)
+     - #00bec7 (Cyan)
+     - #d2f0f0 (Ice Cyan)
+     - #abb5bf (Cool Slate)
+     - #e72582 (Magenta)
+     ========================================================================== */
+  :root {
+    --brand-navy: #1f2a52;
+    --brand-cyan: #00bec7;
+    --brand-ice: #d2f0f0;
+    --brand-slate: #abb5bf;
+    --brand-magenta: #e72582;
+
+    --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-pill: 999px;
+
+    /* Clean, Smooth Light Theme (No Dots or Grid Lines) */
+    --color-bg: #f5f8fa;
+    --color-panel: #ffffff;
+    --color-panel-solid: #ffffff;
+    --color-panel-elevated: #f8fbfc;
+    --color-surface-subtle: #eef5f6;
+    --color-fg: #1f2a52;
+    --color-fg-ice: #1f2a52;
+    --color-fg-muted: #5b6675;
+    --color-border-line: rgba(171, 181, 191, 0.42);
+    --color-border-bright: #00bec7;
+
+    /* Status & Semantic Accents (Strictly from Brand Palette) */
+    --color-ok: #00bec7;
+    --color-warn: #1f2a52;
+    --color-bad: #e72582;
+
+    /* Chart Series — Strictly Brand Colours Only */
+    --c1: #00bec7; /* Brand Cyan */
+    --c2: #1f2a52; /* Brand Navy */
+    --c3: #abb5bf; /* Brand Slate */
+    --c4: #e72582; /* Brand Magenta */
+    --c5: #d2f0f0; /* Brand Ice */
+
+    --cds-chart-muted: #abb5bf;
+    --cds-chart-status-critical: #e72582;
+    --cds-chart-grid: rgba(171, 181, 191, 0.30);
+    --cds-chart-axis: #abb5bf;
+    --cds-chart-reference: #1f2a52;
+    --cds-text-secondary: #5b6675;
+    --cds-surface-popover: #1f2a52;
+    --cds-border: #00bec7;
+    --cds-shadow-popover: 0 12px 28px rgba(31, 42, 82, 0.18);
+    --card-shadow: 0 4px 16px rgba(31, 42, 82, 0.05), 0 1px 3px rgba(31, 42, 82, 0.03);
+
+    color-scheme: light;
+  }
+
+  /* ==========================================================================
+     2. BASE & FLUID FULL-WIDTH RESPONSIVE LAYOUT (MOBILE, TABLET, LAPTOP)
+     ========================================================================== */
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: 14.5px;
+    line-height: 1.5;
+    padding-block: 16px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    position: relative;
+    overflow-x: hidden;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Full width across laptop & large desktop monitors */
+  .el-wrap-outer {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  [hidden] { display: none !important; }
+  .el-page { display: flex; flex-direction: column; gap: 18px; width: 100%; }
+
+  /* Force all paragraphs & callouts to span 100% width with no character cap */
+  p, .el-head p, .el-take, .el-sec > p, .el-note, [data-read] {
+    max-width: none !important;
+    width: 100% !important;
+  }
+
+  /* ==========================================================================
+     3. HERO HEADER & EXECUTIVE SUMMARY BANNER (FULL WIDTH, COMPACT HEIGHT)
+     ========================================================================== */
+  .el-head {
+    position: relative;
+    width: 100%;
+    background: #ffffff;
+    color: #1f2a52;
+    border-radius: var(--radius-lg);
+    padding: 16px 22px;
+    border: 1px solid var(--color-border-line);
+    border-top: 4px solid #1f2a52;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+  }
+
+  .el-head-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 14px;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .el-badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+  .el-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    background: #1f2a52;
+    color: #ffffff;
+    border: 1px solid #1f2a52;
+  }
+  .el-badge i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #00bec7;
+  }
+  .el-badge.secondary {
+    background: #f5f8fa;
+    border-color: #abb5bf;
+    color: #1f2a52;
+  }
+
+  .el-head h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    font-size: clamp(1.35rem, 2vw, 1.85rem);
+    margin: 0 0 4px;
+    color: #1f2a52;
+    position: relative;
+    z-index: 2;
+  }
+  .el-head > p {
+    display: block;
+    margin: 0;
+    color: var(--color-fg-muted);
+    max-width: none !important;
+    width: 100% !important;
+    font-size: 14px;
+    line-height: 1.45;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* High-Impact Executive Takeaway Box — Stretches 100% Full Width */
+  .el-take {
+    display: block;
+    position: relative;
+    z-index: 2;
+    margin-top: 10px !important;
+    padding: 11px 16px;
+    border-radius: var(--radius-md);
+    background: #f5f8fa;
+    border: 1px solid var(--color-border-line);
+    border-left: 4px solid #00bec7;
+    color: #1f2a52 !important;
+    font-size: 14.5px;
+    font-weight: 500;
+    line-height: 1.45;
+    max-width: none !important;
+    width: 100% !important;
+  }
+  .el-take b {
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.95em;
+  }
+  .el-take b[data-draw="h-total-chg"],
+  .el-take b[data-draw="h-gap"] {
+    background: #1f2a52;
+    color: #ffffff;
+  }
+  .el-take b[data-draw="h-spend-chg"] {
+    background: #d2f0f0;
+    color: #1f2a52;
+    border: 1px solid #00bec7;
+  }
+
+  /* ==========================================================================
+     4. STICKY NAVIGATION TABS (RESPONSIVE SCROLL ON MOBILE, WRAP ON DESKTOP)
+     ========================================================================== */
+  .el-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    position: sticky;
+    top: 8px;
+    z-index: 20;
+    background: var(--color-panel);
+    border: 1px solid var(--color-border-line);
+    border-radius: var(--radius-lg);
+    padding: 7px 10px;
+    box-shadow: var(--card-shadow);
+  }
+  .el-tabs-label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-fg-muted);
+    font-weight: 600;
+    padding: 0 10px 0 4px;
+    margin-right: 4px;
+    border-right: 1px solid var(--color-border-line);
+  }
+  .el-tab {
+    appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--color-fg-muted);
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+    white-space: nowrap;
+  }
+  .el-tab:hover {
+    color: #1f2a52;
+    background: #eef5f6;
+    border-color: #abb5bf;
+  }
+  .el-tab[aria-selected="true"] {
+    background: #1f2a52;
+    color: #ffffff;
+    font-weight: 600;
+    border-color: #1f2a52;
+  }
+  .el-tab:focus-visible {
+    outline: 2px solid var(--brand-cyan);
+    outline-offset: 2px;
+  }
+
+  /* ==========================================================================
+     5. KPI CARDS (4 ACROSS ON LAPTOP, 2x2 ON TABLET, 1 COL ON SMALL PHONE)
+     ========================================================================== */
+  .el-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .el-kpi {
+    position: relative;
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    background: var(--color-panel);
+    border: 1px solid var(--color-border-line);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+  }
+  .el-kpi:hover {
+    border-color: #abb5bf;
+  }
+
+  /* Top Accent Bar per KPI Card (Navy, Cyan & Slate) */
+  .el-kpi::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--kpi-accent, #00bec7);
+  }
+
+  .el-kpi:nth-child(1) { --kpi-accent: #1f2a52; }
+  .el-kpi:nth-child(2) { --kpi-accent: #00bec7; }
+  .el-kpi:nth-child(3) { --kpi-accent: #00bec7; }
+  .el-kpi:nth-child(4) { --kpi-accent: #abb5bf; }
+
+  .el-kpi .lbl {
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    color: var(--color-fg-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .el-kpi .val {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    font-size: clamp(1.4rem, 2vw, 1.85rem);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.15;
+    color: var(--color-fg);
+    margin: 2px 0;
+  }
+  .el-kpi .sub {
+    font-size: 12.5px;
+    color: var(--color-fg-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+
+  .el-chg {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11.5px;
+  }
+  .el-bad {
+    color: var(--color-bad);
+  }
+  .el-chg.el-bad {
+    background: rgba(171, 181, 191, 0.25);
+    color: #1f2a52;
+    border: 1px solid #abb5bf;
+  }
+  .el-warn { color: var(--color-warn); }
+  .el-ok { color: var(--color-ok); }
+
+  /* ==========================================================================
+     6. SECTION PANELS & BENTO CARDS
+     ========================================================================== */
+  .el-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .el-sec {
+    background: var(--color-panel);
+    border: 1px solid var(--color-border-line);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .el-sec h2 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin: 0;
+    color: var(--color-fg);
+    text-wrap: balance;
+  }
+  .el-sec > p, .el-note {
+    margin: 0;
+    color: var(--color-fg-muted);
+    line-height: 1.55;
+    max-width: none !important;
+    width: 100% !important;
+  }
+  .el-sec > p b, .el-note b {
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    color: #1f2a52;
+    font-weight: 600;
+    background: #eef5f6;
+    border: 1px solid #abb5bf;
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  .el-two {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    width: 100%;
+  }
+  .el-two > * { min-width: 0; }
+
+  /* ==========================================================================
+     7. RESPONSIVE BREAKPOINTS (TABLET & MOBILE)
+     ========================================================================== */
+  @media (max-width: 1024px) {
+    .el-kpis {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 820px) {
+    .el-two {
+      grid-template-columns: 1fr;
+    }
+    .el-tabs-label {
+      display: none;
+    }
+    .el-tabs {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      padding: 6px 8px;
+    }
+  }
+  @media (max-width: 560px) {
+    body {
+      padding-block: 12px 36px;
+      padding-left: 12px;
+      padding-right: 12px;
+      font-size: 14px;
+    }
+    .el-kpis {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .el-head {
+      padding: 14px 16px;
+    }
+    .el-sec {
+      padding: 16px 14px;
+    }
+    .el-take {
+      padding: 10px 12px;
+      font-size: 13.5px;
+    }
+  }
+
+  /* ==========================================================================
+     7. CHARTS, LEGENDS & POPOVERS
+     ========================================================================== */
+  .el-chart {
+    position: relative;
+    min-height: 270px;
+    width: 100%;
+    margin-top: 6px;
+    padding-top: 4px;
+  }
+  .el-chart svg {
+    display: block;
+    overflow: visible;
+  }
+  .el-chart text {
+    fill: var(--cds-text-secondary);
+    font-size: 12px;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+  }
+  .el-chart .tick line {
+    stroke: var(--cds-chart-grid);
+  }
+  .el-chart .domain {
+    stroke: var(--cds-chart-axis);
+  }
+  .el-chart .el-vlabel {
+    fill: var(--color-fg);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 11.5px;
+    font-variant-numeric: tabular-nums;
+  }
+  .el-chart rect {
+    transition: filter 0.15s ease, opacity 0.15s ease;
+  }
+
+  .el-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--color-fg);
+    margin-bottom: 14px;
+    padding: 8px 14px;
+    background: var(--color-surface-subtle);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border-line);
+    width: fit-content;
+  }
+  .el-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .el-legend i {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  .el-tip {
+    position: absolute;
+    pointer-events: none;
+    background: var(--cds-surface-popover);
+    border: 1px solid var(--cds-border);
+    box-shadow: var(--cds-shadow-popover);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    font-size: 12.5px;
+    color: #f3f9fa;
+    z-index: 30;
+    min-width: 195px;
+    transition: opacity 0.1s ease;
+  }
+  .el-tip div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font-variant-numeric: tabular-nums;
+    padding: 3px 0;
+  }
+  .el-tip div:first-child {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    color: #d2f0f0;
+    border-bottom: 1px solid rgba(210, 240, 240, 0.18);
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+    font-size: 13px;
+  }
+  .el-tip span:first-child { color: #abb5bf; }
+  .el-tip span:last-child {
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  /* ==========================================================================
+     8. FINANCIAL TABLES & STATUS PILLS (GREYS & CYAN — NO PINK PILLS)
+     ========================================================================== */
+  .el-tablewrap {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-line);
+    background: var(--color-panel-solid);
+  }
+
+  .el-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    font-variant-numeric: tabular-nums;
+  }
+  .el-table th {
+    text-align: right;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-fg-muted);
+    font-size: 11px;
+    padding: 12px 14px;
+    background: var(--color-surface-subtle);
+    border-bottom: 1px solid var(--color-border-line);
+    white-space: nowrap;
+  }
+  .el-table td {
+    text-align: right;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--color-border-line);
+    white-space: nowrap;
+    color: var(--color-fg);
+  }
+  .el-table tbody tr {
+    transition: background-color 0.15s ease;
+  }
+  .el-table tbody tr:hover {
+    background: rgba(210, 240, 240, 0.30);
+  }
+  :root[data-theme="dark"] .el-table tbody tr:hover {
+    background: rgba(0, 190, 199, 0.12);
+  }
+  .el-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .el-table th:first-child,
+  .el-table td:first-child {
+    text-align: left;
+    font-family: var(--font-sans);
+    font-weight: 600;
+  }
+  .el-table td.el-wrap,
+  .el-table th.el-wrap {
+    white-space: normal;
+    text-align: left;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    min-width: 240px;
+    color: var(--color-fg-muted);
+    line-height: 1.45;
+  }
+  .el-table td.el-bad {
+    color: var(--color-bad);
+    font-weight: 600;
+  }
+  .el-table td.el-ok {
+    color: #008f96;
+    font-weight: 600;
+  }
+  :root[data-theme="dark"] .el-table td.el-ok {
+    color: #00bec7;
+  }
+
+  .el-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    font-weight: 600;
+    border: 1px solid var(--color-border-line);
+  }
+  .el-pill.real {
+    color: #1f2a52;
+    background: #d2f0f0;
+    border-color: #00bec7;
+  }
+  .el-pill.levy {
+    color: #1f2a52;
+    background: rgba(171, 181, 191, 0.28);
+    border-color: #abb5bf;
+  }
+  :root[data-theme="dark"] .el-pill.levy {
+    color: #d2f0f0;
+    background: rgba(171, 181, 191, 0.2);
+  }
+
+  /* ==========================================================================
+     9. CALLOUTS, ACCORDIONS & QUESTIONS LIST (NO PINK BUTTONS)
+     ========================================================================== */
+  .el-callout {
+    background: var(--color-surface-subtle);
+    border: 1px solid var(--color-border-line);
+    border-left: 4px solid #00bec7;
+    border-radius: var(--radius-md);
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .el-callout strong {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-fg);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  details.el-more {
+    border: 1px solid var(--color-border-line);
+    background: var(--color-surface-subtle);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    transition: border-color 0.2s ease;
+  }
+  details.el-more:hover {
+    border-color: #abb5bf;
+  }
+  details.el-more summary {
+    cursor: pointer;
+    color: var(--color-fg);
+    font-weight: 600;
+    font-size: 13.5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+  }
+  details.el-more summary::-webkit-details-marker { display: none; }
+  details.el-more summary::after {
+    content: "Expand table +";
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    color: #1f2a52;
+    padding: 4px 12px;
+    border-radius: var(--radius-sm);
+    background: #ffffff;
+    border: 1px solid #abb5bf;
+  }
+  details.el-more[open] summary {
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--color-border-line);
+  }
+  details.el-more[open] summary::after {
+    content: "Collapse −";
+    color: #1f2a52;
+    background: rgba(171, 181, 191, 0.28);
+    border-color: #abb5bf;
+  }
+
+  /* Numbered Action Cards for AGM Questions */
+  .el-qs {
+    margin: 6px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    counter-reset: agm-q;
+  }
+  .el-qs li {
+    counter-increment: agm-q;
+    position: relative;
+    padding: 16px 18px 16px 52px;
+    background: var(--color-panel-solid);
+    border: 1px solid var(--color-border-line);
+    border-radius: var(--radius-md);
+    line-height: 1.55;
+    color: var(--color-fg);
+    transition: border-color 0.2s ease;
+  }
+  .el-qs li:hover {
+    border-color: #abb5bf;
+  }
+  .el-qs li::before {
+    content: counter(agm-q);
+    position: absolute;
+    left: 14px;
+    top: 16px;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: #eef5f6;
+    border: 1px solid #abb5bf;
+    color: #1f2a52;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .el-qs li b {
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    color: #1f2a52;
+    font-weight: 700;
+  }
+  :root[data-theme="dark"] .el-qs li b {
+    color: #d2f0f0;
+  }
+
+  /* Footer Methodology Notes */
+  details.el-notes {
+    background: var(--color-panel);
+    border: 1px solid var(--color-border-line);
+    border-radius: var(--radius-md);
+    padding: 14px 20px;
+  }
+  details.el-notes summary {
+    cursor: pointer;
+    color: var(--color-fg-muted);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  details.el-notes ul {
+    color: var(--color-fg-muted);
+    line-height: 1.6;
+    max-width: none;
+    width: 100%;
+    margin: 12px 0 4px;
+    padding-left: 20px;
+  }
+  details.el-notes li { margin-bottom: 6px; }
+  [data-dash-source-state=refreshing] { opacity: .5; }
+
+  /* ==========================================================================
+     10. LOT LEVY CALCULATOR & AGM VOTING SCORECARDS (GREYS & NAVY)
+     ========================================================================== */
+  .el-calc-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: var(--color-surface-subtle);
+    border: 1px solid var(--color-border-line);
+    border-radius: var(--radius-md);
+  }
+  .el-calc-bar label {
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-fg);
+    font-weight: 700;
+  }
+  .el-select {
+    appearance: none;
+    background: var(--color-panel-solid);
+    color: var(--color-fg);
+    border: 1px solid #abb5bf;
+    border-radius: var(--radius-sm);
+    padding: 9px 36px 9px 14px;
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    background-image: linear-gradient(45deg, transparent 50%, #1f2a52 50%),
+                      linear-gradient(135deg, #1f2a52 50%, transparent 50%);
+    background-position: calc(100% - 18px) calc(1em + 1px),
+                         calc(100% - 13px) calc(1em + 1px);
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+  .el-select:focus-visible {
+    outline: 2px solid #00bec7;
+    outline-offset: 2px;
+  }
+  .el-motion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 6px;
+  }
+  .el-motion-card {
+    background: var(--color-panel-solid);
+    border: 1px solid var(--color-border-line);
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    border-top: 3px solid var(--m-color, #00bec7);
+  }
+  .el-motion-card.amend { --m-color: #1f2a52; }
+  .el-motion-card.oppose { --m-color: #abb5bf; }
+  .el-motion-card.support { --m-color: #00bec7; }
+  .el-motion-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .el-motion-id {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 700;
+    color: #1f2a52;
+    background: #eef5f6;
+    border: 1px solid #abb5bf;
+    padding: 3px 9px;
+    border-radius: 6px;
+  }
+  .el-motion-tag {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 3px 10px;
+    border-radius: 6px;
+    color: #1f2a52;
+    background: #eef5f6;
+    border: 1px solid #abb5bf;
+  }
+  .el-motion-card.support .el-motion-tag {
+    background: #d2f0f0;
+    border-color: #00bec7;
+  }
+  .el-motion-card h3 {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 2px 0 0;
+    color: var(--color-fg);
+  }
+  .el-motion-card p {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--color-fg-muted);
+    line-height: 1.55;
+  }
+</style>
+</head>
+<body>
+<div class="el-wrap-outer"><div class="el-page">
+  <header class="el-head" id="top">
+    <div class="el-head-top">
+      <div class="el-badges">
+        <span class="el-badge"><i></i> Strata Plan 91099</span>
+        <span class="el-badge secondary">200 The Entrance Rd, Erina</span>
+        <span class="el-badge secondary">AGM 24 Nov 2026</span>
+      </div>
+    </div>
+    <h1>Element Strata Finances</h1>
+    <p>Audited accounts for 2023/24 to 2025/26 (years ending 31 August) and the 2026/27 budget in the 24 November 2026 AGM papers. All cost centres combined unless noted.</p>
+    <p class="el-take" lang="en-AU">Total levies have risen <b data-draw="h-total-chg" data-source="headline" data-field="total_change" data-row="0">—</b> since 2023/24. Actual spending rose only <b data-draw="h-spend-chg" data-source="headline" data-field="spend_change" data-row="0">—</b> from 2023/24 to 2025/26, yet the 2026/27 budget plans <b data-draw="h-gap" data-source="headline" data-field="spend_gap" data-row="0">—</b> more spending than was actually spent in 2025/26.</p>
+  </header>
+
+  <div class="el-tabs" role="tablist" aria-label="Dashboard sections">
+    <span class="el-tabs-label" aria-hidden="true">Explore Data</span>
+    <button type="button" class="el-tab" role="tab" data-tab="tab-summary" aria-controls="tab-summary" aria-selected="true" tabindex="0">Summary</button>
+    <button type="button" class="el-tab" role="tab" data-tab="tab-calculator" aria-controls="tab-calculator" aria-selected="false" tabindex="-1">My Lot Calculator</button>
+    <button type="button" class="el-tab" role="tab" data-tab="tab-spending" aria-controls="tab-spending" aria-selected="false" tabindex="-1">Spending increases</button>
+    <button type="button" class="el-tab" role="tab" data-tab="tab-fees" aria-controls="tab-fees" aria-selected="false" tabindex="-1">BCS fees & contract</button>
+    <button type="button" class="el-tab" role="tab" data-tab="tab-funds" aria-controls="tab-funds" aria-selected="false" tabindex="-1">Fund issues</button>
+    <button type="button" class="el-tab" role="tab" data-tab="tab-savings" aria-controls="tab-savings" aria-selected="false" tabindex="-1">Savings</button>
+    <button type="button" class="el-tab" role="tab" data-tab="tab-questions" aria-controls="tab-questions" aria-selected="false" tabindex="-1">AGM Voting & Questions</button>
+  </div>
+
+  <div class="el-panel" id="tab-summary" role="tabpanel">
+  <section class="el-kpis" id="kpis">
+    <div class="el-kpi">
+      <span class="lbl">Total levies, 2026/27</span>
+      <span class="val" data-draw="k-levy" data-source="levy_totals" data-field="total" data-where="year=2026/27">—</span>
+      <span class="sub"><span class="el-chg el-bad" data-draw="k-levy-chg" data-source="headline" data-field="total_change" data-row="0">—</span> since 2023/24</span>
+    </div>
+    <div class="el-kpi">
+      <span class="lbl">Admin fund, 31 Aug 2026</span>
+      <span class="val" data-draw="k-admin" data-source="balances" data-field="admin_fund" data-where="as_at=2026-08-31">—</span>
+      <span class="sub">Was <span data-draw="k-admin-was" data-source="balances" data-field="admin_fund" data-where="as_at=2024-08-31">—</span> in 2024</span>
+    </div>
+    <div class="el-kpi">
+      <span class="lbl">Capital works fund, 31 Aug 2026</span>
+      <span class="val" data-draw="k-cwf" data-source="balances" data-field="capital_works_fund" data-where="as_at=2026-08-31">—</span>
+      <span class="sub">Was <span data-draw="k-cwf-was" data-source="balances" data-field="capital_works_fund" data-where="as_at=2024-08-31">—</span> in 2024</span>
+    </div>
+    <div class="el-kpi">
+      <span class="lbl">Possible savings a year</span>
+      <span class="val"><span data-draw="k-save-lo" data-source="savings_total" data-field="real_low" data-row="0">—</span> to <span data-draw="k-save-hi" data-source="savings_total" data-field="real_high" data-row="0">—</span></span>
+      <span class="sub">Plus <span data-draw="k-levy-lo" data-source="savings_total" data-field="levy_low" data-row="0">—</span> less to levy if the budget is trimmed</span>
+    </div>
+  </section>
+
+  <section class="el-sec" id="admin-split">
+    <h2>Admin fund by account at 31 August</h2>
+    <p>The admin fund is made up of the main account and the business centre account. Almost all of the deficit sits in the business centre account.</p>
+    <div class="el-tablewrap">
+      <table class="el-table" data-source="balances" data-row-key="as_at">
+        <thead><tr><th data-field="as_at">31 August</th><th data-field="main_admin">Main account</th><th data-field="bc_admin">Business centre</th><th data-field="admin_fund">Admin fund total</th></tr></thead>
+        <tbody data-draw="split-table"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="el-sec" id="levies">
+    <h2>Levies raised each year</h2>
+    <p>Admin, capital works and business centre levies including GST. The business centre (Lots 13 to 51) gets its first capital works levy in 2026/27.</p>
+    <div class="el-chart" data-draw="levy-chart" data-source="levies levy_totals"></div>
+  </section>
+
+  <section class="el-two" id="position">
+    <div class="el-sec">
+      <h2>Fund balances at 31 August</h2>
+      <p>The admin fund has recovered from a deficit. The capital works fund has nearly doubled since 2023.</p>
+      <div class="el-chart" data-draw="bal-chart" data-source="balances"></div>
+    </div>
+    <div class="el-sec">
+      <h2>Main fund budget against actual spending</h2>
+      <p>BCS has budgeted well above what was spent for two years running, and the 2026/27 budget does it again.</p>
+      <div class="el-chart" data-draw="budget-chart" data-source="budget_gap"></div>
+    </div>
+  </section>
+
+  </div>
+
+  <div class="el-panel" id="tab-calculator" role="tabpanel" hidden>
+  <section class="el-sec" id="lot-calc-sec">
+    <h2>2026/27 Levy & Savings Estimator by Lot</h2>
+    <p>Select your lot below to see your exact proposed 2026/27 levies from the AGM papers (pages 49–61), broken down by quarter, alongside your proportional share of the identified savings.</p>
+    <div class="el-calc-bar">
+      <label for="lot-select">Select Your Lot:</label>
+      <select id="lot-select" class="el-select"></select>
+      <span id="lot-badge-type" class="el-pill real">—</span>
+    </div>
+    <div class="el-kpis" id="lot-kpis">
+      <div class="el-kpi">
+        <span class="lbl">Proposed 2026/27 Annual Levy</span>
+        <span class="val" id="lc-annual">—</span>
+        <span class="sub" id="lc-annual-sub">—</span>
+      </div>
+      <div class="el-kpi">
+        <span class="lbl">Oct 2026 (P1 Already Issued)</span>
+        <span class="val" id="lc-p1">—</span>
+        <span class="sub">Includes $0 Business Centre CWF</span>
+      </div>
+      <div class="el-kpi">
+        <span class="lbl">Jan / Apr / Jul 2027 (P2–P4 Each)</span>
+        <span class="val" id="lc-p2">—</span>
+        <span class="sub" id="lc-p2-sub">—</span>
+      </div>
+      <div class="el-kpi">
+        <span class="lbl">Your Share of Potential Levy Trim</span>
+        <span class="val" id="lc-save">—</span>
+        <span class="sub">From $18.8k–$22.1k total scheme savings</span>
+      </div>
+    </div>
+    <div class="el-tablewrap">
+      <table class="el-table">
+        <thead>
+          <tr>
+            <th>Fund Component</th>
+            <th>Entitlement Share</th>
+            <th>P1 (1 Oct 2026)</th>
+            <th>P2 (1 Jan 2027)</th>
+            <th>P3 (1 Apr 2027)</th>
+            <th>P4 (1 Jul 2027)</th>
+            <th>Total 2026/27</th>
+          </tr>
+        </thead>
+        <tbody id="lc-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+  </div>
+
+  <div class="el-panel" id="tab-spending" role="tabpanel" hidden>
+  <section class="el-sec" id="increases">
+    <h2>Biggest increases, 2023/24 actual to 2026/27 budget</h2>
+    <p>Insurance and electricity drive most of the rise. Insurance has few options because most insurers decline the building over its cladding, even though testing cleared it, so steep premium rises are partly outside the committee's control. Building manager costs more than doubled in 2025/26, but cleaning fell by a similar amount that year, so the two together rose more modestly.</p>
+    <div class="el-chart" data-draw="inc-chart" data-source="expense_changes"></div>
+    <details class="el-more" id="all-lines">
+      <summary>Show all spending lines</summary>
+    <div class="el-tablewrap">
+      <table class="el-table" data-source="expense_changes" data-row-key="line">
+        <thead><tr>
+          <th data-field="line">Line</th><th data-field="fy2324">2023/24</th><th data-field="fy2425">2024/25</th><th data-field="fy2526">2025/26</th><th data-field="budget2627">2026/27 budget</th><th data-field="change">Change</th><th data-field="change_pct">Change %</th>
+        </tr></thead>
+        <tbody data-draw="inc-table"></tbody>
+      </table>
+    </div>
+    </details>
+  </section>
+
+  </div>
+
+  <div class="el-panel" id="tab-fees" role="tabpanel" hidden>
+  <section class="el-sec" id="bcs">
+    <h2>What BCS is paid</h2>
+    <p>BCS started taking insurance commission in 2024/25, yet the budget uses the higher $18,000 fee that the new agreement sets for when BCS does not receive commission. Under Option 1 the fee would be $12,500.</p>
+    <div class="el-chart" data-draw="bcs-chart" data-source="bcs_totals"></div>
+    <details class="el-more" id="fee-lines">
+      <summary>Show each fee line</summary>
+    <div class="el-tablewrap">
+      <table class="el-table" data-source="bcs_fees" data-row-key="line">
+        <thead><tr>
+          <th data-field="line">Fee</th><th data-field="fy2324">2023/24</th><th data-field="fy2425">2024/25</th><th data-field="fy2526">2025/26</th><th data-field="budget2627">2026/27 budget</th>
+        </tr></thead>
+        <tbody data-draw="bcs-table"></tbody>
+      </table>
+    </div>
+    </details>
+    <div class="el-callout" id="work-orders">
+      <strong>Work order duplication</strong>
+      <p class="el-note">The building manager already finds contractors and checks work on site, yet BCS charges $34 plus staff time ($170 to $268 an hour) for each quote request and work order it issues. Work order and quote fees were <b data-draw="wo-2526" data-source="bcs_fees" data-field="fy2526" data-where="line=Work orders and quotes">—</b> in 2025/26 and are budgeted at <b data-draw="wo-2627" data-source="bcs_fees" data-field="budget2627" data-where="line=Work orders and quotes">—</b>. BCS additional services cost a further <b data-draw="as-2526" data-source="bcs_fees" data-field="fy2526" data-where="line=Additional services">—</b>. If owners authorise the building manager to arrange routine work within a set limit, BCS would only process payment, which is covered by the base fee.</p>
+    </div>
+    <div class="el-callout" id="contract-traps" style="border-left-color: #1f2a52;">
+      <strong>Motion 5.2 Alert: 3-Year Contract Lock-In &amp; Unchecked Option Boxes (Pages 65–71)</strong>
+      <p class="el-note">The proposed Strata Management Agency Agreement in the 2026 AGM packet has three critical issues that owners should amend before passing Motion 5.2: (1) <b>Item 3</b> locks the scheme into a <b>3-year term</b> (a 1-year term is standard best practice); (2) <b>Item 5</b> sets an automatic annual fee escalator of <b>"CPI or 5% (whichever is the greater)"</b> plus up to 7.5% p.a. on Schedule B rates; and (3) <b>Item 6</b> leaves both Option 1 ($12,500) and Option 2 ($18,000) <b>unticked</b>, while <b>Schedule A1 (page 71)</b> leaves row 2(a) financial management blank—which defaults to <i>"Full authority with no limitations"</i>.</p>
+    </div>
+  </section>
+
+  </div>
+
+  <div class="el-panel" id="tab-funds" role="tabpanel" hidden>
+  <section class="el-two" id="transfer">
+    <div class="el-sec">
+      <h2>2025/26 Fund Results &amp; Business Centre Deficits</h2>
+      <p>At 31 August 2026, the Main Admin account returned to a <b>$11,357</b> surplus, while the Business Centre cost centre (Lots 13 to 51) ended 2025/26 with a <b>-$11,389</b> Admin deficit and a <b>-$13,058</b> Capital Works deficit. To recover these deficits, the 2026/27 budget raises Business Centre Admin levies from $30,000 to <b>$56,000</b> and introduces a new <b>$15,515</b> Business Centre Capital Works levy (even though only $997 was spent in 2025/26).</p>
+      <div class="el-tablewrap">
+        <table class="el-table" data-source="fund_summary_2526" data-row-key="fund">
+          <thead><tr><th data-field="fund">Account</th><th data-field="income">2025/26 Income</th><th data-field="spend">2025/26 Spend</th><th data-field="closing">31 Aug 2026 Balance</th><th data-field="levy2627">2026/27 Levy</th></tr></thead>
+          <tbody data-draw="shift-table"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="el-sec">
+      <h2>Routine costs charged to capital works</h2>
+      <p>Window cleaning and security services are paid out of the Capital Works Fund ($16,760 in 2025/26 and $17,500 in the 2026/27 budget). These are recurring operating costs rather than capital replacements, which makes the Admin Fund look healthier than it is.</p>
+      <div class="el-tablewrap">
+        <table class="el-table" data-source="cwf_operating" data-row-key="year">
+          <thead><tr><th data-field="year">Year</th><th data-field="window_cleaning">Window cleaning</th><th data-field="security_services">Security</th><th data-source="cwf_totals" data-field="total">Total</th></tr></thead>
+          <tbody data-draw="cwf-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="el-two" id="extra-fund-issues">
+    <div class="el-sec">
+      <h2>Idle Capital Works Cash Earning 0.05% Interest</h2>
+      <p>At 31 August 2026, the scheme held <b>$313,603 in cash</b>, with <b>$270,604</b> sitting in the Capital Works Fund. Yet the Capital Works Fund earned only <b>$130.06</b> in interest across the entire 2025/26 financial year (roughly 0.05% p.a.), while 2026/27 Capital Works spending is budgeted at just $42,500. Placing $200,000+ into a term deposit (Schedule D setup fee is $79) could generate $3,900 to $5,900 a year after tax.</p>
+    </div>
+    <div class="el-sec">
+      <h2>2025/26 Electricity Split &amp; Incomplete Motion 2.12 Table</h2>
+      <p>In 2025/26, electricity cost <b>$29,569.90</b> across two Origin Energy accounts (<b>$13,426.05</b> in Main Admin and <b>$16,143.85</b> in Business Centre Admin), and the 2026/27 budget increases total electricity by another 30% to <b>$38,440.86</b>. However, the Motion 2.12 utility disclosure table (page 5) only lists the $13,426.05 Main account and leaves Contract Length and Expiry Date as <b>"n/a"</b>.</p>
+    </div>
+  </section>
+
+  </div>
+
+  <div class="el-panel" id="tab-savings" role="tabpanel" hidden>
+  <section class="el-sec" id="savings">
+    <h2>Where savings could come from</h2>
+    <p>Real savings reduce what the scheme spends. Lower levy items reduce what is collected up front, since the budget allows more than recent costs suggest. These are estimates for the committee to test with BCS.</p>
+    <div class="el-tablewrap">
+      <table class="el-table" data-source="savings" data-row-key="opportunity">
+        <thead><tr><th data-field="opportunity">Opportunity</th><th data-field="type">Type</th><th data-field="low">Low</th><th data-field="high">High</th><th data-field="basis" class="el-wrap">Basis</th></tr></thead>
+        <tbody data-draw="save-table"></tbody>
+      </table>
+    </div>
+  </section>
+
+  </div>
+
+  <div class="el-panel" id="tab-questions" role="tabpanel" hidden>
+  <section class="el-sec" id="voting-guide">
+    <h2>2026 AGM Motion-by-Motion Action Guide</h2>
+    <p>Key motions on the 24 November 2026 agenda where owners can directly reduce levies, prevent overcharging, or improve governance.</p>
+    <div class="el-motion-grid">
+      <div class="el-motion-card oppose">
+        <div class="el-motion-head">
+          <span class="el-motion-id">Motion 2.6</span>
+          <span class="el-motion-tag">Defeat / Skip</span>
+        </div>
+        <h3>Safety Audit Report ($1,216)</h3>
+        <p>The last Safety Audit Report was completed on <b>5 March 2026</b> (just 8 months ago, costing $1,216.36 from Capital Works). Commissioning another report immediately is unnecessary duplication.</p>
+      </div>
+      <div class="el-motion-card amend">
+        <div class="el-motion-head">
+          <span class="el-motion-id">Motions 2.11 &amp; 2.12</span>
+          <span class="el-motion-tag">Clarify Details</span>
+        </div>
+        <h3>RCD Testing &amp; Origin Energy</h3>
+        <p>Motion 2.11 lists the last RCD inspection date as <i>"{None}"</i>. Motion 2.12 omits the Business Centre Origin account ($16,144 actual in 2025/26, $20,987 budgeted) and lists contract length and expiry as <i>"n/a"</i>.</p>
+      </div>
+      <div class="el-motion-card amend">
+        <div class="el-motion-head">
+          <span class="el-motion-id">Motions 4.3 – 4.7</span>
+          <span class="el-motion-tag">Amend Budget &amp; Levies</span>
+        </div>
+        <h3>2026/27 Budget &amp; Levy Contributions</h3>
+        <p>Correct the management fee from $18,000 to $12,500 (-$5,500), cap the Business Centre electricity budget closer to 2025/26 actuals (-$7,400), and request an itemisation of the -$13,058 Business Centre CWF balance.</p>
+      </div>
+      <div class="el-motion-card amend">
+        <div class="el-motion-head">
+          <span class="el-motion-id">Motion 5.2</span>
+          <span class="el-motion-tag">Amend Contract Terms</span>
+        </div>
+        <h3>BCS Agency Agreement Renewal</h3>
+        <p>1) Tick <b>Option 1 ($12,500)</b> in Item 6 (if Motion 3.6 passes); 2) Amend Item 3 term from <b>3 years to 1 year</b>; 3) Amend Item 5 fee increase from <i>"CPI or 5% whichever is greater"</i> to <b>CPI only</b>.</p>
+      </div>
+      <div class="el-motion-card support">
+        <div class="el-motion-head">
+          <span class="el-motion-id">Motion 6.9 / Committee</span>
+          <span class="el-motion-tag">Governance Rule</span>
+        </div>
+        <h3>Direct Building Manager Authority</h3>
+        <p>Confirm that routine maintenance quotes and work orders under an agreed threshold (e.g. $2,000) be arranged directly by the Building Manager without incurring BCS's $34 + $170–$268/hr work order fee.</p>
+      </div>
+      <div class="el-motion-card support">
+        <div class="el-motion-head">
+          <span class="el-motion-id">Capital Works Cash</span>
+          <span class="el-motion-tag">Instruction to Treasurer</span>
+        </div>
+        <h3>Place $200k+ in Term Deposit</h3>
+        <p>The scheme holds <b>$313,603 in cash</b> (with $270,604 in Capital Works) earning just $130.06 interest in CWF in 2025/26 (~0.05%). Instruct BCS ($79 setup fee) to place $200k–$250k into a Macquarie/Bendigo term deposit.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="el-sec" id="questions">
+    <h2>Questions for BCS for the 2026 AGM</h2>
+    <ul class="el-qs">
+      <li>Please complete the Motion 2.12 utility table with the Origin Energy contract term, expiry date and the 2025/26 cost of both electricity accounts ($13,426 Main + $16,144 Business Centre), not just the main one.</li>
+      <li>Why is Business Centre electricity budgeted to jump from $16,144 actual in 2025/26 to $20,987 in 2026/27 (+30%), and are the building's rooftop solar panels feeding into either common area meter?</li>
+      <li>Please itemise what makes up the <b data-draw="q-bccw" data-source="balances" data-field="bc_capital_works" data-where="as_at=2026-08-31">—</b> Business Centre Capital Works deficit at 31 August 2026 (given only $997 was spent in 2025/26) before owners vote on the new $15,515.34 levy in Motion 4.7.</li>
+      <li>If owners consent to insurance commission under Motion 3.6 ($11,970.05 forecast for 2026/27), why is the management fee budgeted at $18,000 (Option 2) rather than the $12,500 Option 1 fee, and why is Item 6 left unticked in the proposed contract?</li>
+      <li>Will BCS agree to amend Motion 5.2's new agency agreement from a 3-year term to a 1-year term, and change the annual fee review in Item 5 from "CPI or 5% (whichever is greater)" to CPI?</li>
+      <li>Can routine maintenance arranged by the building manager be paid without a BCS work order fee ($34 + $170–$268/hr), given the committee already reviews and approves invoices with photos?</li>
+      <li>Please move window cleaning ($8,900 in 2025/26; $9,500 budgeted) and security services ($7,860 in 2025/26; $8,000 budgeted) to the Admin Fund, as recurring running costs rather than Capital Works.</li>
+      <li>Why did the $270,604 Capital Works Fund earn only $130.06 in interest in 2025/26, and can $200,000+ of the scheme's $313,603 cash balance be placed in a high-interest term deposit (Schedule D setup fee $79)?</li>
+    </ul>
+  </section>
+
+  </div>
+
+  <details class="el-notes" id="notes">
+    <summary>How these figures were worked out</summary>
+    <ul>
+      <li>2023/24 figures come from the 30 October 2024 AGM papers. 2024/25 and 2025/26 come from the audited statements in the 24 November 2026 papers.</li>
+      <li>Budget 2026/27 lines add the main and business centre budgets together.</li>
+      <li>Savings figures are estimates. The term deposit estimate assumes rates 2 to 3 points above what the fund now earns, after 30% tax.</li>
+    </ul>
+  </details>
+</div></div>
+
+<script>
+  /* Data from the AGM papers (30 Oct 2024 and 24 Nov 2026), years ending 31 August. Edit these tables to update the dashboard. */
+  const RAW = {
+  "levies": "year,admin,capital_works,bc_admin,bc_capital_works\n2023/24,260000,100360,23700,0\n2024/25,340000,108202,24885,0\n2025/26,360000,120000,30000,0\n2026/27,383000,110579,56000,15515.34\n",
+  "balances": "as_at,admin_fund,capital_works_fund,cash,arrears,main_admin,bc_admin,bc_capital_works\n2023-08-31,21225.99,140356.76,197971.10,8004.85,,,\n2024-08-31,-41171.54,152315.82,154427.31,7322.93,4179.20,-45350.74,-6324.00\n2025-08-31,-24972.58,204794.65,208343.85,13494.07,-15996.91,-8975.67,-12061.00\n2026-08-31,-32.07,270603.73,313602.75,1718.15,11357.40,-11389.47,-13058.00\n",
+  "expenses": "line,fy2324,fy2425,fy2526,budget2627\nInsurance premiums,61326.97,68809.92,76969.83,92363.79\nCleaning and supplies,82920.91,91699.93,82467.17,91143.38\nElectricity,17996.60,25456.42,29569.90,38440.86\nBuilding manager,10207.56,9759.76,22628.66,26000.00\nWaste,16858.81,19712.33,16134.59,20000.00\nFire protection,21235.59,13481.89,17526.22,20000.00\nAir conditioning,10508.16,11091.81,13939.99,15000.00\nTropical plants,7276.36,8340.80,7702.80,8676.25\nLift maintenance,5816.92,7644.93,7810.41,8600.00\nPlumbing,3532.00,3991.00,4412.00,5928.85\nGarden,2181.80,3318.11,4463.58,5000.00\nCaretaking stationery,3289.00,3588.00,3887.00,4200.00\nSanitary disposals,1485.36,948.38,3541.86,4000.00\nTelephone and internet,2173.53,2950.80,2300.80,3792.22\nElectrical repairs,17846.86,5634.73,3108.10,4000.00\nLegal,558.00,8461.42,378.57,2000.00\n",
+  "bcs_fees": "line,fy2324,fy2425,fy2526,budget2627\nManagement fee,11202.39,11639.06,11877.96,18000.00\nInsurance commission,0,9747.13,10881.86,11970.05\nAdditional services,5042.49,4679.96,5562.90,6000.00\nDisbursements,3479.53,3621.64,3849.62,3500.00\nTaxation management,1872.72,1967.26,2068.16,2350.00\nWork orders and quotes,2503.80,1844.34,1736.36,2000.00\nDebt recovery,2532.72,1695.44,1528.18,0\nSchedule B fees,0,29.09,407.26,500.00\nStrata Hub,130.00,136.36,143.64,150.90\n",
+  "totals": "year,total_spend,main_budget,main_actual\n2023/24,324859.57,254233.63,278267.58\n2024/25,320152.44,312516.27,298869.85\n2025/26,333878.64,351211.59,304161.49\n2026/27,393235.94,354169.95,\n",
+  "cwf_operating": "year,window_cleaning,security_services\n2023/24,0,0\n2024/25,9283.78,9520.60\n2025/26,8900.00,7860.00\n2026/27,9500.00,8000.00\n",
+  "fund_summary_2526": "fund,income,spend,closing,levy2627\nMain Admin,331514.94,304160.63,11357.40,383000.00\nMain Capital Works,108951.63,42145.55,283661.73,110579.00\nBusiness Centre Admin,27304.21,29718.01,-11389.47,56000.00\nBusiness Centre Capital Works,0.00,997.00,-13058.00,15515.34\n",
+  "savings": "opportunity,type,low,high,basis\nManagement fee on Option 1,Real saving,5500,5500,\"Agreement offers $12,500 if BCS keeps insurance commission or $18,000 if not. Budget uses $18,000 while forecasting $11,970 commission.\"\nInvest capital works cash,Real saving,3900,5900,\"About $280,000 earning roughly 0.6%. Assumes 2 to 3 points more in a term deposit after 30% tax. Macquarie account setup is $79.\"\nBuilding manager arranges routine work,Real saving,1000,2000,\"BCS charges $34 plus staff time per quote or work order on top of the building manager. Work order fees were $1,736 to $2,504 a year.\"\nSkip annual safety audit,Real saving,1000,1300,\"Last audit was March 2026 ($1,216). The motion asks for a new one eight months later.\"\nElectricity budget at actual plus 5%,Lower levy,7400,7400,\"Budget is $38,441 against $29,570 actual. Depends on the contract now in place.\"\n"
+};
+  /* Exact Lot Entitlements (Total = 1000) & Business Centre Cost Centre Entitlements (Total = 100, Lots 13-51) from pages 49-61 */
+  const LOTS = [
+    { lot: 1, u: 36, bc: 0 }, { lot: 2, u: 53, bc: 0 }, { lot: 3, u: 84, bc: 0 }, { lot: 4, u: 31, bc: 0 },
+    { lot: 5, u: 1, bc: 0 }, { lot: 6, u: 61, bc: 0 }, { lot: 7, u: 40, bc: 0 }, { lot: 8, u: 42, bc: 0 },
+    { lot: 9, u: 24, bc: 0 }, { lot: 10, u: 80, bc: 0 }, { lot: 11, u: 48, bc: 0 }, { lot: 12, u: 58, bc: 0 },
+    { lot: 13, u: 11, bc: 2.71 }, { lot: 14, u: 13, bc: 3.20 }, { lot: 15, u: 11, bc: 2.71 }, { lot: 16, u: 9, bc: 2.22 },
+    { lot: 17, u: 14, bc: 3.45 }, { lot: 18, u: 18, bc: 4.43 }, { lot: 19, u: 13, bc: 3.20 }, { lot: 20, u: 13, bc: 3.20 },
+    { lot: 21, u: 12, bc: 2.96 }, { lot: 22, u: 12, bc: 2.96 }, { lot: 23, u: 12, bc: 2.96 }, { lot: 24, u: 12, bc: 2.96 },
+    { lot: 25, u: 12, bc: 2.96 }, { lot: 26, u: 12, bc: 2.96 }, { lot: 27, u: 9, bc: 2.22 }, { lot: 28, u: 8, bc: 1.97 },
+    { lot: 29, u: 13, bc: 3.20 }, { lot: 30, u: 9, bc: 2.22 }, { lot: 31, u: 9, bc: 2.22 }, { lot: 32, u: 9, bc: 2.22 },
+    { lot: 33, u: 9, bc: 2.22 }, { lot: 34, u: 9, bc: 2.22 }, { lot: 35, u: 9, bc: 2.22 }, { lot: 36, u: 10, bc: 2.46 },
+    { lot: 37, u: 12, bc: 2.96 }, { lot: 38, u: 9, bc: 2.22 }, { lot: 39, u: 11, bc: 2.71 }, { lot: 40, u: 12, bc: 2.96 },
+    { lot: 41, u: 18, bc: 4.43 }, { lot: 42, u: 10, bc: 2.46 }, { lot: 43, u: 8, bc: 1.97 }, { lot: 44, u: 13, bc: 3.20 },
+    { lot: 45, u: 8, bc: 1.97 }, { lot: 46, u: 6, bc: 1.47 }, { lot: 47, u: 6, bc: 1.47 }, { lot: 48, u: 6, bc: 1.47 },
+    { lot: 49, u: 6, bc: 1.47 }, { lot: 50, u: 6, bc: 1.47 }, { lot: 51, u: 7, bc: 1.72 },
+    { lot: 52, u: 34, bc: 0 }, { lot: 53, u: 2, bc: 0 }
+  ];
+  const DATA = {};
+  Object.keys(RAW).forEach((k) => { DATA[k] = d3.csvParse(RAW[k].trim()); });
+  const CALCS = {}, DRAWS = {};
+  window.dash = {
+    colors: ['var(--c1)', 'var(--c2)', 'var(--c3)', 'var(--c4)', 'var(--c5)'],
+    data(id) {
+      const c = CALCS[id];
+      if (c) {
+        if (!('value' in c)) c.value = c.fn(...c.inputs.map((i) => dash.data(i).data));
+        return { status: 'ok', data: c.value };
+      }
+      return DATA[id] ? { status: 'ok', data: DATA[id] } : { status: 'missing', data: [] };
+    },
+    calc(id, o) { CALCS[id] = o; },
+    draw(name, fn) { DRAWS[name] = fn; },
+    setLink(name) { try { history.replaceState(null, '', '#' + name); } catch (e) {} },
+  };
+  window.runDraws = function () {
+    Object.keys(DRAWS).forEach((name) => {
+      document.querySelectorAll('[data-draw="' + name + '"]').forEach((el) => {
+        if (el.closest('[hidden]')) return;
+        try { DRAWS[name](el); } catch (e) { console.error(name, e); }
+      });
+    });
+  };
+</script>
+
+<script>
+  window.ELF = (function () {
+    const money = d3.format('$,.0f');
+    const pct = d3.format('+.0%');
+    const years = ['2023/24', '2024/25', '2025/26', '2026/27'];
+    const yLabel = (y) => (y === '2026/27' ? '2026/27 budget' : y);
+    function tip(el) {
+      let t = el.querySelector(':scope > .el-tip');
+      if (!t) { t = document.createElement('div'); t.className = 'el-tip'; t.hidden = true; el.appendChild(t); }
+      return t;
+    }
+    function showTip(el, t, ev, title, lines) {
+      t.replaceChildren();
+      const h = document.createElement('div'); h.textContent = title; t.appendChild(h);
+      lines.forEach(([a, b]) => {
+        const r = document.createElement('div');
+        const s1 = document.createElement('span'); s1.textContent = a;
+        const s2 = document.createElement('span'); s2.textContent = b;
+        r.append(s1, s2); t.appendChild(r);
+      });
+      t.hidden = false;
+      const box = el.getBoundingClientRect();
+      let x = ev.clientX - box.left + 14, y = ev.clientY - box.top + 14;
+      const tw = t.offsetWidth, th = t.offsetHeight;
+      if (x + tw > box.width) x = Math.max(0, ev.clientX - box.left - tw - 14);
+      if (y + th > box.height) y = Math.max(0, ev.clientY - box.top - th - 14);
+      t.style.left = x + 'px'; t.style.top = y + 'px';
+    }
+    function placeholder(el, d) {
+      el.replaceChildren();
+      el.textContent = d.status === 'error' ? 'Failed to load' : '—';
+    }
+    function measure(svg, texts) {
+      const g = svg.append('g');
+      let w = 0;
+      texts.forEach((s) => { const n = g.append('text').text(s).node(); w = Math.max(w, n.getComputedTextLength()); });
+      g.remove();
+      return w;
+    }
+    function legend(el, items) {
+      const lg = document.createElement('div'); lg.className = 'el-legend';
+      items.forEach(([label, color]) => {
+        const s = document.createElement('span'); const i = document.createElement('i');
+        i.style.background = color; s.append(i, document.createTextNode(label)); lg.appendChild(s);
+      });
+      el.appendChild(lg);
+    }
+    function barChart(el, rows, keys, labels, opts) {
+      const stacked = opts.stacked;
+      const W = Math.max(280, el.clientWidth || 600), H = opts.height || 275;
+      const colors = opts.colors || keys.map((k, i) => dash.colors[i % dash.colors.length]);
+      el.replaceChildren();
+      legend(el, keys.map((k, i) => [labels[i], colors[i]]));
+      const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', opts.aria);
+      const totals = rows.map((r) => (stacked ? d3.sum(keys, (k) => +r[k] || 0) : d3.max(keys, (k) => +r[k] || 0)));
+      const y = d3.scaleLinear().domain([0, d3.max(totals) * 1.14]).nice().range([H - 28, 12]);
+      const ticks = y.ticks(5);
+      const fmtTick = (v) => (v >= 1000 ? '$' + d3.format(',')(v / 1000) + 'k' : '$' + v);
+      const ml = measure(svg, ticks.map(fmtTick)) + 14;
+      const x = d3.scaleBand().domain(rows.map((r) => r.year)).range([ml, W - 8]).padding(0.32);
+      svg.append('g').attr('transform', `translate(${ml},0)`).call(d3.axisLeft(y).tickValues(ticks).tickFormat(fmtTick).tickSize(-(W - ml - 8))).call((g) => g.select('.domain').remove());
+      svg.append('g').attr('transform', `translate(0,${H - 28})`).call(d3.axisBottom(x).tickFormat(yLabel).tickSize(0)).call((g) => g.select('.domain').remove()).selectAll('text').attr('dy', '1.25em');
+      const t = tip(el);
+      const inner = stacked ? null : d3.scaleBand().domain(keys).range([0, x.bandwidth()]).padding(0.12);
+      rows.forEach((r, ri) => {
+        let base = 0;
+        keys.forEach((k, i) => {
+          const v = +r[k];
+          if (!v) return;
+          const rect = svg.append('rect').style('fill', colors[i]).attr('rx', 4);
+          if (stacked) {
+            rect.attr('x', x(r.year)).attr('width', x.bandwidth()).attr('y', y(base + v)).attr('height', Math.max(0, y(base) - y(base + v)));
+            base += v;
+          } else {
+            rect.attr('x', x(r.year) + inner(k)).attr('width', inner.bandwidth()).attr('y', y(v)).attr('height', Math.max(0, y(0) - y(v)));
+          }
+        });
+        const hit = svg.append('rect').attr('x', x(r.year)).attr('width', x.bandwidth()).attr('y', 0).attr('height', H - 28).style('fill', 'transparent').style('cursor', 'crosshair');
+        const lines = keys.map((k, i) => [labels[i], r[k] === null || r[k] === '' || r[k] === undefined ? 'n/a' : money(+r[k])]);
+        if (stacked) lines.push(['Total', money(totals[ri])]);
+        hit.on('pointermove', (ev) => showTip(el, t, ev, yLabel(r.year), lines)).on('pointerleave', () => { t.hidden = true; });
+        if (opts.topLabel) {
+          svg.append('text').attr('class', 'el-vlabel').attr('x', x(r.year) + x.bandwidth() / 2).attr('y', y(totals[ri]) - 8).attr('text-anchor', 'middle').text(opts.topLabel(r, totals[ri]));
+        }
+      });
+    }
+    return { money, pct, years, yLabel, tip, showTip, placeholder, measure, legend, barChart };
+  })();
+</script>
+
+<script>
+  const num = (v) => (v === null || v === undefined || v === '' ? null : +v);
+  dash.calc('levy_totals', {
+    inputs: ['levies'],
+    title: 'Total levies',
+    description: 'Each year’s levies added across all four funds.',
+    fn: (levies) => levies.map((r) => ({ year: r.year, total: Math.round((+r.admin + +r.capital_works + +r.bc_admin + +r.bc_capital_works) * 100) / 100 })),
+  });
+  dash.calc('headline', {
+    inputs: ['levy_totals', 'totals'],
+    title: 'Headline changes',
+    description: 'Change in total levies and spending from 2023/24, and the 2026/27 budget against 2025/26 actual spending.',
+    fn: (levyTotals, totals) => {
+      const lf = levyTotals.find((r) => r.year === '2023/24'), ll = levyTotals.find((r) => r.year === '2026/27');
+      const s24 = totals.find((r) => r.year === '2023/24'), s26 = totals.find((r) => r.year === '2025/26'), b27 = totals.find((r) => r.year === '2026/27');
+      if (!lf || !ll || !s24 || !s26 || !b27) return [];
+      return [{
+        total_change: Math.round((ll.total / lf.total - 1) * 1000) / 1000,
+        spend_change: Math.round((+s26.total_spend / +s24.total_spend - 1) * 1000) / 1000,
+        spend_gap: Math.round((+b27.total_spend - +s26.total_spend) * 100) / 100,
+      }];
+    },
+  });
+  dash.calc('expense_changes', {
+    inputs: ['expenses'],
+    title: 'Change by spending line',
+    description: 'Each line’s 2026/27 budget less its 2023/24 actual, in dollars and per cent.',
+    fn: (expenses) => expenses.map((r) => ({
+      line: r.line, fy2324: +r.fy2324, fy2425: +r.fy2425, fy2526: +r.fy2526, budget2627: +r.budget2627,
+      change: Math.round((+r.budget2627 - +r.fy2324) * 100) / 100,
+      change_pct: +r.fy2324 ? Math.round((+r.budget2627 / +r.fy2324 - 1) * 1000) / 1000 : null,
+    })).sort((a, b) => b.change - a.change),
+  });
+  dash.calc('bcs_totals', {
+    inputs: ['bcs_fees'],
+    title: 'BCS fees and commission by year',
+    description: 'All BCS fee lines added together each year, with insurance commission shown apart.',
+    fn: (bcsFees) => {
+      const cols = [['2023/24', 'fy2324'], ['2024/25', 'fy2425'], ['2025/26', 'fy2526'], ['2026/27', 'budget2627']];
+      return cols.map(([year, c]) => {
+        const commission = bcsFees.filter((r) => r.line === 'Insurance commission').reduce((s, r) => s + +r[c], 0);
+        const fees = bcsFees.filter((r) => r.line !== 'Insurance commission').reduce((s, r) => s + +r[c], 0);
+        return { year, fees: Math.round(fees * 100) / 100, commission: Math.round(commission * 100) / 100, total: Math.round((fees + commission) * 100) / 100 };
+      });
+    },
+  });
+  dash.calc('bc_shift_calc', {
+    inputs: ['bc_shift'],
+    title: 'Business centre transfer in 2024/25',
+    description: 'Opening balance plus 2024/25 income less spending, compared with the audited balance at 31 August 2025.',
+    fn: (bcShift) => bcShift.map((r) => {
+      const expected = +r.opening_aug2024 + +r.income_2425 - +r.spend_2425;
+      return { fund: r.fund, expected: Math.round(expected * 100) / 100, actual: +r.actual_aug2025, difference: Math.round((+r.actual_aug2025 - expected) * 100) / 100 };
+    }),
+  });
+  dash.calc('cwf_totals', {
+    inputs: ['cwf_operating'],
+    title: 'Routine costs in capital works',
+    description: 'Window cleaning plus security services paid from the capital works fund each year.',
+    fn: (cwfOperating) => cwfOperating.map((r) => ({ year: r.year, total: Math.round((+r.window_cleaning + +r.security_services) * 100) / 100 })),
+  });
+  dash.calc('budget_gap', {
+    inputs: ['totals'],
+    title: 'Main fund budget against actual',
+    description: 'Main admin fund budget and actual spending each year.',
+    fn: (totals) => totals.map((r) => ({ year: r.year, budget: +r.main_budget, actual: num(r.main_actual), gap: num(r.main_actual) === null ? null : Math.round((+r.main_budget - +r.main_actual) * 100) / 100 })),
+  });
+  dash.calc('savings_total', {
+    inputs: ['savings'],
+    title: 'Savings totals',
+    description: 'Estimated savings added up by type.',
+    fn: (savings) => {
+      const sum = (t, f) => savings.filter((r) => r.type === t).reduce((s, r) => s + +r[f], 0);
+      return [{ real_low: sum('Real saving', 'low'), real_high: sum('Real saving', 'high'), levy_low: sum('Lower levy', 'low'), levy_high: sum('Lower levy', 'high') }];
+    },
+  });
+</script>
+
+<script>
+  (function () {
+    const F = window.ELF;
+    function cell(name, src, pick, fmt) {
+      dash.draw(name, (el) => {
+        const d = dash.data(src);
+        if (d.status !== 'ok' || !d.data || !d.data.length) { el.textContent = '—'; return; }
+        const r = pick(d.data);
+        el.textContent = r ? fmt(r) : '—';
+      });
+    }
+    const byYear = (y) => (rows) => rows.find((r) => r.year === y);
+    const byDate = (y) => (rows) => rows.find((r) => r.as_at === y);
+    const first = (rows) => rows[0];
+    const byLine = (l) => (rows) => rows.find((r) => r.line === l);
+    cell('h-total-chg', 'headline', first, (r) => F.pct(r.total_change));
+    cell('h-spend-chg', 'headline', first, (r) => F.pct(r.spend_change));
+    cell('h-gap', 'headline', first, (r) => F.money(r.spend_gap));
+    cell('k-levy', 'levy_totals', byYear('2026/27'), (r) => F.money(r.total));
+    cell('k-levy-chg', 'headline', first, (r) => F.pct(r.total_change));
+    cell('k-admin', 'balances', byDate('2026-08-31'), (r) => F.money(+r.admin_fund));
+    cell('k-admin-was', 'balances', byDate('2024-08-31'), (r) => F.money(+r.admin_fund));
+    cell('k-cwf', 'balances', byDate('2026-08-31'), (r) => F.money(+r.capital_works_fund));
+    cell('k-cwf-was', 'balances', byDate('2024-08-31'), (r) => F.money(+r.capital_works_fund));
+    cell('k-save-lo', 'savings_total', first, (r) => F.money(r.real_low));
+    cell('k-save-hi', 'savings_total', first, (r) => F.money(r.real_high));
+    cell('k-levy-lo', 'savings_total', first, (r) => F.money(r.levy_low));
+    cell('wo-2526', 'bcs_fees', byLine('Work orders and quotes'), (r) => F.money(+r.fy2526));
+    cell('wo-2627', 'bcs_fees', byLine('Work orders and quotes'), (r) => F.money(+r.budget2627));
+    cell('as-2526', 'bcs_fees', byLine('Additional services'), (r) => F.money(+r.fy2526));
+    cell('q-shift', 'bc_shift_calc', (rows) => rows.find((r) => r.fund === 'Business centre admin'), (r) => F.money(r.difference));
+    cell('q-bccw', 'balances', byDate('2026-08-31'), (r) => F.money(Math.abs(+r.bc_capital_works)));
+    cell('shift', 'bc_shift_calc', (rows) => rows.find((r) => r.fund === 'Business centre admin'), (r) => F.money(r.difference));
+
+    dash.draw('levy-chart', (el) => {
+      const d = dash.data('levies');
+      if (d.status !== 'ok' || !d.data.length) return F.placeholder(el, d);
+      F.barChart(el, d.data, ['admin', 'capital_works', 'bc_admin', 'bc_capital_works'], ['Admin', 'Capital works', 'Business centre admin', 'Business centre capital works'], {
+        stacked: true,
+        colors: ['#1f2a52', '#00bec7', '#abb5bf', '#e72582'],
+        aria: 'Stacked bars of levies raised by fund for each year from 2023/24 to the 2026/27 budget',
+        topLabel: (r, tot) => F.money(tot),
+      });
+    });
+
+    dash.draw('budget-chart', (el) => {
+      const d = dash.data('budget_gap');
+      if (d.status !== 'ok' || !d.data || !d.data.length) return F.placeholder(el, d);
+      F.barChart(el, d.data, ['budget', 'actual'], ['Budget', 'Actual'], {
+        stacked: false, colors: ['#abb5bf', '#00bec7'],
+        aria: 'Grouped bars of main fund budget and actual spending by year',
+      });
+    });
+
+    dash.draw('bcs-chart', (el) => {
+      const d = dash.data('bcs_totals');
+      if (d.status !== 'ok' || !d.data || !d.data.length) return F.placeholder(el, d);
+      F.barChart(el, d.data, ['fees', 'commission'], ['Fees charged to the scheme', 'Insurance commission'], {
+        stacked: true, colors: ['#1f2a52', '#e72582'], aria: 'Stacked bars of BCS fees and insurance commission by year', topLabel: (r, tot) => F.money(tot), height: 255,
+      });
+    });
+
+    dash.draw('bal-chart', (el) => {
+      const d = dash.data('balances');
+      if (d.status !== 'ok' || !d.data.length) return F.placeholder(el, d);
+      const rows = d.data.map((r) => ({ date: d3.utcParse('%Y-%m-%d')(r.as_at), admin: +r.admin_fund, cwf: +r.capital_works_fund, as_at: r.as_at }));
+      const W = Math.max(280, el.clientWidth || 500), H = 275;
+      el.replaceChildren();
+      const colors = ['#00bec7', '#e72582'];
+      F.legend(el, [['Capital works fund', colors[0]], ['Admin fund', colors[1]]]);
+      const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', 'Lines of admin fund and capital works fund balances at 31 August, 2023 to 2026');
+
+      /* Gradient area fill for Capital Works Fund */
+      const defs = svg.append('defs');
+      const grad = defs.append('linearGradient').attr('id', 'cwf-area-grad').attr('x1', '0').attr('y1', '0').attr('x2', '0').attr('y2', '1');
+      grad.append('stop').attr('offset', '0%').attr('stop-color', '#00bec7').attr('stop-opacity', 0.32);
+      grad.append('stop').attr('offset', '100%').attr('stop-color', '#00bec7').attr('stop-opacity', 0.0);
+
+      const lo = Math.min(0, d3.min(rows, (r) => r.admin)), hi = d3.max(rows, (r) => r.cwf);
+      const y = d3.scaleLinear().domain([lo, hi * 1.1]).nice().range([H - 28, 12]);
+      const ticks = y.ticks(5);
+      const ft = (v) => (Math.abs(v) >= 1000 ? (v < 0 ? '−$' : '$') + d3.format(',')(Math.abs(v) / 1000) + 'k' : '$' + v);
+      const ml = F.measure(svg, ticks.map(ft)) + 14;
+      const x = d3.scalePoint().domain(rows.map((r) => r.as_at)).range([ml + 20, W - 28]);
+      svg.append('g').attr('transform', `translate(${ml},0)`).call(d3.axisLeft(y).tickValues(ticks).tickFormat(ft).tickSize(-(W - ml - 8))).call((g) => g.select('.domain').remove());
+      svg.append('line').attr('x1', ml).attr('x2', W - 8).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '4 3');
+      svg.append('g').attr('transform', `translate(0,${H - 28})`).call(d3.axisBottom(x).tickFormat((s) => d3.utcFormat('%b %Y')(d3.utcParse('%Y-%m-%d')(s))).tickSize(0)).call((g) => g.select('.domain').remove()).selectAll('text').attr('dy', '1.25em');
+
+      /* Subtle area under CWF curve */
+      svg.append('path').datum(rows)
+        .attr('d', d3.area().curve(d3.curveMonotoneX).x((r) => x(r.as_at)).y0(y(0)).y1((r) => y(r.cwf)))
+        .style('fill', 'url(#cwf-area-grad)');
+
+      [['cwf', colors[0]], ['admin', colors[1]]].forEach(([k, c]) => {
+        svg.append('path').datum(rows).attr('d', d3.line().curve(d3.curveMonotoneX).x((r) => x(r.as_at)).y((r) => y(r[k]))).style('fill', 'none').style('stroke', c).style('stroke-width', 3);
+        svg.selectAll(null).data(rows).enter().append('circle').attr('cx', (r) => x(r.as_at)).attr('cy', (r) => y(r[k])).attr('r', 4.5).style('fill', c).style('stroke', 'var(--color-panel-solid)').style('stroke-width', 2);
+      });
+      const last = rows[rows.length - 1];
+      svg.append('text').attr('class', 'el-vlabel').attr('x', x(last.as_at)).attr('y', y(last.cwf) - 12).attr('text-anchor', 'end').text(F.money(last.cwf));
+      const t = F.tip(el);
+      const step = rows.length > 1 ? x(rows[1].as_at) - x(rows[0].as_at) : W;
+      rows.forEach((r) => {
+        svg.append('rect').attr('x', x(r.as_at) - step / 2).attr('width', step).attr('y', 0).attr('height', H - 28).style('fill', 'transparent').style('cursor', 'crosshair')
+          .on('pointermove', (ev) => F.showTip(el, t, ev, '31 ' + d3.utcFormat('%B %Y')(r.date), [['Capital works fund', F.money(r.cwf)], ['Admin fund', F.money(r.admin)]]))
+          .on('pointerleave', () => { t.hidden = true; });
+      });
+    });
+
+    dash.draw('inc-chart', (el) => {
+      const d = dash.data('expense_changes');
+      if (d.status !== 'ok' || !d.data || !d.data.length) return F.placeholder(el, d);
+      const rows = d.data.filter((r) => r.change > 1000);
+      el.replaceChildren();
+      const W = Math.max(280, el.clientWidth || 600), rowH = 32, H = rows.length * rowH + 10;
+      el.style.minHeight = H + 'px';
+      const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', 'Bars showing the dollar increase for each spending line from 2023/24 actual to the 2026/27 budget');
+      const ml = F.measure(svg, rows.map((r) => r.line)) + 16;
+      const labelW = F.measure(svg, rows.map((r) => F.money(r.change) + '  ' + F.pct(r.change_pct))) + 16;
+      const x = d3.scaleLinear().domain([0, d3.max(rows, (r) => r.change)]).range([ml, Math.max(ml + 40, W - labelW)]);
+      const t = F.tip(el);
+      rows.forEach((r, i) => {
+        const yy = i * rowH + 4;
+        /* Subtle track background */
+        svg.append('rect').attr('x', ml).attr('y', yy + 5).attr('height', rowH - 12).attr('width', Math.max(40, W - labelW - ml)).attr('rx', 4)
+          .style('fill', 'var(--cds-chart-grid)');
+        svg.append('text').attr('x', ml - 10).attr('y', yy + rowH / 2).attr('dy', '0.35em').attr('text-anchor', 'end').text(r.line);
+        svg.append('rect').attr('x', ml).attr('y', yy + 5).attr('height', rowH - 12).attr('width', Math.max(2, x(r.change) - ml)).attr('rx', 4)
+          .style('fill', r.change_pct > 0.5 ? 'var(--cds-chart-status-critical)' : 'var(--c1)');
+        svg.append('text').attr('class', 'el-vlabel').attr('x', x(r.change) + 8).attr('y', yy + rowH / 2).attr('dy', '0.35em').text(F.money(r.change) + '  ' + F.pct(r.change_pct));
+        svg.append('rect').attr('x', 0).attr('y', yy).attr('width', W).attr('height', rowH).style('fill', 'transparent').style('cursor', 'crosshair')
+          .on('pointermove', (ev) => F.showTip(el, t, ev, r.line, [['2023/24', F.money(r.fy2324)], ['2024/25', F.money(r.fy2425)], ['2025/26', F.money(r.fy2526)], ['2026/27 budget', F.money(r.budget2627)]]))
+          .on('pointerleave', () => { t.hidden = true; });
+      });
+    });
+
+    function table(name, src, cols) {
+      dash.draw(name, (tb) => {
+        const d = dash.data(src);
+        tb.replaceChildren();
+        if (d.status !== 'ok' || !d.data || !d.data.length) return;
+        d.data.forEach((r) => {
+          const tr = document.createElement('tr');
+          cols.forEach((c) => {
+            const td = document.createElement('td');
+            if (c.cls) td.className = c.cls;
+            const v = c.get ? c.get(r) : r[c.f];
+            if (c.pill) { const s = document.createElement('span'); s.className = 'el-pill ' + (v === 'Real saving' ? 'real' : 'levy'); s.textContent = v; td.appendChild(s); }
+            else td.textContent = v === null || v === undefined || v === '' ? '—' : (c.fmt ? c.fmt(v) : v);
+            if (c.tone) { const tc = c.tone(r); if (tc) td.classList.add(tc); }
+            tr.appendChild(td);
+          });
+          tb.appendChild(tr);
+        });
+      });
+    }
+    const m = (v) => F.money(+v);
+    table('inc-table', 'expense_changes', [
+      { f: 'line' }, { f: 'fy2324', fmt: m }, { f: 'fy2425', fmt: m }, { f: 'fy2526', fmt: m }, { f: 'budget2627', fmt: m },
+      { f: 'change', fmt: m, tone: (r) => (r.change > 0 ? 'el-bad' : 'el-ok') }, { f: 'change_pct', fmt: (v) => F.pct(v), tone: (r) => (r.change_pct > 0.5 ? 'el-bad' : null) },
+    ]);
+    table('bcs-table', 'bcs_fees', [{ f: 'line' }, { f: 'fy2324', fmt: m }, { f: 'fy2425', fmt: m }, { f: 'fy2526', fmt: m }, { f: 'budget2627', fmt: m }]);
+    table('shift-table', 'fund_summary_2526', [
+      { f: 'fund' },
+      { f: 'income', fmt: m },
+      { f: 'spend', fmt: m },
+      { f: 'closing', fmt: m, tone: (r) => (+r.closing < 0 ? 'el-bad' : 'el-ok') },
+      { f: 'levy2627', fmt: m },
+    ]);
+    dash.draw('cwf-table', (tb) => {
+      const d = dash.data('cwf_operating'), tt = dash.data('cwf_totals');
+      tb.replaceChildren();
+      if (d.status !== 'ok' || !d.data.length) return;
+      const tot = tt.status === 'ok' && tt.data ? tt.data : [];
+      d.data.forEach((r) => {
+        const tr = document.createElement('tr');
+        const t = tot.find((x) => x.year === r.year);
+        [F.yLabel(r.year), m(r.window_cleaning), m(r.security_services), t ? F.money(t.total) : '—'].forEach((v) => { const td = document.createElement('td'); td.textContent = v; tr.appendChild(td); });
+        tr.setAttribute('data-key', r.year);
+        tb.appendChild(tr);
+      });
+    });
+    dash.draw('split-table', (tb) => {
+      const d = dash.data('balances');
+      tb.replaceChildren();
+      if (d.status !== 'ok' || !d.data.length) return;
+      d.data.filter((r) => r.main_admin !== null && r.main_admin !== '').forEach((r) => {
+        const tr = document.createElement('tr');
+        tr.setAttribute('data-key', r.as_at);
+        [[r.as_at.slice(0, 4), null], [m(r.main_admin), +r.main_admin], [m(r.bc_admin), +r.bc_admin], [m(r.admin_fund), +r.admin_fund]].forEach(([v, n]) => {
+          const td = document.createElement('td'); td.textContent = v;
+          if (n !== null && n < 0) td.classList.add('el-bad');
+          tr.appendChild(td);
+        });
+        tb.appendChild(tr);
+      });
+    });
+    table('save-table', 'savings', [{ f: 'opportunity' }, { f: 'type', pill: true }, { f: 'low', fmt: m }, { f: 'high', fmt: m }, { f: 'basis', cls: 'el-wrap' }]);
+
+    /* Interactive Lot Levy & Savings Calculator */
+    const sel = document.getElementById('lot-select');
+    if (sel && typeof LOTS !== 'undefined') {
+      LOTS.forEach((l) => {
+        const opt = document.createElement('option');
+        opt.value = l.lot;
+        opt.textContent = `Lot ${l.lot} (${l.u} units${l.bc ? ' • Business Centre ' + l.bc + '%' : ' • Main Commercial'})`;
+        if (l.lot === 21) opt.selected = true;
+        sel.appendChild(opt);
+      });
+      const fmt2 = d3.format('$,.2f');
+      function updateLotCalc() {
+        const info = LOTS.find((x) => x.lot === +sel.value) || LOTS[0];
+        const uShare = info.u / 1000;
+        const bcShare = info.bc / 100;
+
+        const badge = document.getElementById('lot-badge-type');
+        if (info.bc > 0) {
+          badge.className = 'el-pill levy';
+          badge.textContent = `Business Centre Suite (Lots 13–51) • ${info.u}/1000 Main + ${info.bc}% BC`;
+        } else {
+          badge.className = 'el-pill real';
+          badge.textContent = `Commercial Lot • ${info.u}/1000 Main Entitlement (Excl. from BC)`;
+        }
+
+        const rows = [
+          {
+            name: 'Main Administrative Fund',
+            ent: `${info.u} / 1000 (${(uShare * 100).toFixed(1)}%)`,
+            p1: 95000 * uShare,
+            p2: 96000 * uShare,
+            tot: 383000 * uShare,
+          },
+          {
+            name: 'Main Capital Works Fund',
+            ent: `${info.u} / 1000 (${(uShare * 100).toFixed(1)}%)`,
+            p1: 32949.5 * uShare,
+            p2: 25876.5 * uShare,
+            tot: 110579 * uShare,
+          },
+          {
+            name: 'Business Centre Admin Fund',
+            ent: info.bc ? `${info.bc}% of BC` : '0% (Exempt)',
+            p1: 10000 * bcShare,
+            p2: 15333.3333 * bcShare,
+            tot: 56000 * bcShare,
+          },
+          {
+            name: 'Business Centre Capital Works (New)',
+            ent: info.bc ? `${info.bc}% of BC` : '0% (Exempt)',
+            p1: 0,
+            p2: 5171.78 * bcShare,
+            tot: 15515.34 * bcShare,
+          },
+        ];
+
+        const sumP1 = d3.sum(rows, (r) => r.p1);
+        const sumP2 = d3.sum(rows, (r) => r.p2);
+        const sumTot = d3.sum(rows, (r) => r.tot);
+
+        /* Last year (2025/26) comparison for this lot */
+        const lyTot = (360000 + 120000) * uShare + 30000 * bcShare;
+        const diffYoY = sumTot - lyTot;
+        const pctYoY = lyTot ? diffYoY / lyTot : 0;
+
+        /* Savings share: Main savings ($11,400-$14,700) by uShare + BC Electricity trim ($7,400) by bcShare */
+        const saveLo = 11400 * uShare + 7400 * bcShare;
+        const saveHi = 14700 * uShare + 7400 * bcShare;
+
+        document.getElementById('lc-annual').textContent = fmt2(sumTot);
+        document.getElementById('lc-annual-sub').innerHTML = `<span class="el-chg ${diffYoY > 0 ? 'el-bad' : 'el-ok'}">${F.pct(pctYoY)} (${diffYoY >= 0 ? '+' : ''}${fmt2(diffYoY)})</span> vs 2025/26 (${fmt2(lyTot)})`;
+        document.getElementById('lc-p1').textContent = fmt2(sumP1);
+        document.getElementById('lc-p2').textContent = fmt2(sumP2);
+        document.getElementById('lc-p2-sub').textContent = info.bc > 0 ? 'Includes new BC Capital Works + higher BC Admin' : 'Main Admin + Main Capital Works';
+        document.getElementById('lc-save').textContent = `${F.money(saveLo)} – ${F.money(saveHi)}`;
+
+        const tb = document.getElementById('lc-tbody');
+        tb.replaceChildren();
+        rows.forEach((r) => {
+          const tr = document.createElement('tr');
+          [r.name, r.ent, fmt2(r.p1), fmt2(r.p2), fmt2(r.p2), fmt2(r.p2), fmt2(r.tot)].forEach((val) => {
+            const td = document.createElement('td');
+            td.textContent = val;
+            tr.appendChild(td);
+          });
+          tb.appendChild(tr);
+        });
+        const trTot = document.createElement('tr');
+        trTot.style.fontWeight = '700';
+        trTot.style.borderTop = '2px solid var(--color-border-bright)';
+        ['Total for Lot ' + info.lot, '', fmt2(sumP1), fmt2(sumP2), fmt2(sumP2), fmt2(sumP2), fmt2(sumTot)].forEach((val) => {
+          const td = document.createElement('td');
+          td.textContent = val;
+          trTot.appendChild(td);
+        });
+        tb.appendChild(trTot);
+      }
+      sel.addEventListener('change', updateLotCalc);
+      updateLotCalc();
+    }
+  })();
+</script>
+
+<script>
+  (function () {
+    const tabs = Array.from(document.querySelectorAll('.el-tabs [data-tab]'));
+    const panels = Array.from(document.querySelectorAll('.el-panel'));
+    if (!tabs.length || !panels.length) return;
+    function open(id, link) {
+      if (!panels.some((p) => p.id === id)) id = panels[0].id;
+      panels.forEach((p) => { p.hidden = p.id !== id; });
+      tabs.forEach((t) => { const on = t.dataset.tab === id; t.setAttribute('aria-selected', on ? 'true' : 'false'); t.tabIndex = on ? 0 : -1; });
+      if (window.runDraws) window.runDraws();
+      if (link) dash.setLink(id);
+    }
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => open(t.dataset.tab, true));
+      t.addEventListener('keydown', (ev) => {
+        if (ev.key !== 'ArrowRight' && ev.key !== 'ArrowLeft') return;
+        const n = tabs[(i + (ev.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+        n.focus(); open(n.dataset.tab, true);
+      });
+    });
+    open((location.hash || '').slice(1), false);
+  })();
+</script>
+
+<script>
+  window.runDraws();
+  let resizeTimer;
+  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(window.runDraws, 150); });
+</script>
+</body>
+</html>
